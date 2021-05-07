@@ -1,0 +1,29 @@
+package com.devsuperior.dsvendas.service;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.devsuperior.dsvendas.dto.SaleDTO;
+import com.devsuperior.dsvendas.entities.Sale;
+import com.devsuperior.dsvendas.repositories.SaleRepository;
+import com.devsuperior.dsvendas.repositories.SellerRepository;
+
+@Service
+public class SaleService {
+	
+	@Autowired // Faz com que a instância seja automatica pelo framework sem precisar usar o "new"
+	private SaleRepository repository;
+	
+	@Autowired 
+	private SellerRepository sellerrepository;	
+	
+	@Transactional(readOnly = true)
+	public Page<SaleDTO> findAll(Pageable pageble){
+		sellerrepository.findAll(); //traz todos vendedores para a memória evitando várias consultas no banco de dados. Recomendado somente quando o número de vendedores for pequeno.
+		Page<Sale> result = repository.findAll(pageble);
+		return result.map(x -> new SaleDTO(x));
+	}
+}
